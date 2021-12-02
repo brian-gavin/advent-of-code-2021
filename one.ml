@@ -27,8 +27,6 @@ let part2 () =
   collect () |> windows |> List.map ~f:sum |> num_increases |> Int.to_string
   |> print_endline
 
-let () = part2 ()
-
 (*
 let debug_print l =
   let inner l =

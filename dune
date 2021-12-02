@@ -1,3 +1,3 @@
 (executable
- (name one)
+ (name aoc)
  (libraries base stdio))

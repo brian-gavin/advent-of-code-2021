@@ -17,5 +17,7 @@ let () =
   | "1", "1" -> One.part1 ()
   | "1", "2" -> One.part2 ()
   | "2", "1" -> Two.part1 ()
+  | "3", "1" -> Three.part1 ()
+  | "3", "2" -> Three.part2 ()
   | problem, part ->
       failwith (Printf.sprintf "bad (problem,part): (%s,%s) " problem part)

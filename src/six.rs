@@ -1,13 +1,8 @@
-use std::io::{self, prelude::*};
+use std::io;
 
 pub fn solve() -> String {
     const DAYS: usize = 256;
-    let initial: Vec<u64> = {
-        let mut s = String::new();
-        let stdin = io::stdin();
-        stdin.lock().read_to_string(&mut s).unwrap();
-        s.trim().split(',').filter_map(|n| n.parse().ok()).collect()
-    };
+    let initial: Vec<u64> = crate::parse_csv(io::stdin()).unwrap();
     let buckets = {
         let mut b = [0; 9];
         initial.into_iter().for_each(|n| {
@@ -15,7 +10,7 @@ pub fn solve() -> String {
         });
         b
     };
-    let n = fishes(buckets, DAYS);
+    let n = fishes::<DAYS>(buckets);
     format!("after {} days, {} fishies", DAYS, n)
 }
 
@@ -35,8 +30,8 @@ pub fn fishes_slow(mut fishes: Vec<u64>, days: usize) -> Vec<u64> {
     fishes
 }
 
-pub fn fishes(mut fishes: [u64; 9], days: usize) -> u64 {
-    for _ in 0..days {
+pub fn fishes<const DAYS: usize>(mut fishes: [u64; 9]) -> u64 {
+    for _ in 0..DAYS {
         fishes.rotate_left(1);
         fishes[6] += fishes[8];
     }

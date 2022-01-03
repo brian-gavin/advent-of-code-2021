@@ -5,6 +5,7 @@ fn main() {
     let answer = match problem.as_str() {
         "5" => five::solve(),
         "6" => six::solve(),
+        "7" => seven::solve(),
         p => {
             eprintln!("invalid problem: {}", p);
             std::process::exit(1);

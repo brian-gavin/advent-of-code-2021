@@ -3,6 +3,7 @@ use std::{
     str::FromStr,
 };
 
+pub mod eight;
 pub mod five;
 pub mod seven;
 pub mod six;

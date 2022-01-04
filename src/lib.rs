@@ -5,6 +5,7 @@ use std::{
 
 pub mod eight;
 pub mod five;
+pub mod nine;
 pub mod seven;
 pub mod six;
 

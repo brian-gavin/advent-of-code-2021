@@ -7,6 +7,7 @@ fn main() {
         "6" => six::solve(),
         "7" => seven::solve(),
         "8" => eight::solve(),
+        "9" => nine::solve(),
         p => {
             eprintln!("invalid problem: {}", p);
             std::process::exit(1);

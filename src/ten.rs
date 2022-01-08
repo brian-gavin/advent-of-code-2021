@@ -4,23 +4,29 @@ use std::{
 };
 
 pub fn solve() -> String {
-    io::stdin()
+    let mut scores: Vec<u64> = io::stdin()
         .lock()
         .lines()
-        .filter_map(Result::ok)
-        .map(|s| valid_chunks(&s))
-        .filter_map(Result::err)
+        .map(Result::unwrap)
+        .filter_map(|s| valid_chunks(&s).err())
         .filter_map(|e| match e {
-            ChunkError::Corrupt(c) => Some(c),
-            ChunkError::Incomplete => None, // ignore for now
+            ChunkError::Incomplete(fixes) => Some(fixes),
+            _ => None,
         })
-        .map(points)
-        .sum::<u32>()
-        .to_string()
+        .map(|fixes| {
+            fixes
+                .into_iter()
+                .fold(0, |score, fix| (score * 5) + points(fix))
+        })
+        .collect();
+    scores.sort();
+    let mid = scores[scores.len() / 2];
+    mid.to_string()
 }
 
+#[derive(Debug)]
 enum ChunkError {
-    Incomplete,
+    Incomplete(Vec<char>),
     Corrupt(char),
 }
 
@@ -33,24 +39,32 @@ fn valid_chunks(s: &str) -> Result<(), ChunkError> {
     Ok(())
 }
 
-fn must_next(it: &mut Chars) -> Result<char, ChunkError> {
+fn must_next(it: &mut Chars, expect: char) -> Result<char, ChunkError> {
     if let Some(n) = it.next() {
         Ok(n)
     } else {
-        return Err(ChunkError::Incomplete);
+        return Err(ChunkError::Incomplete(vec![expect]));
     }
 }
 
 fn chunk(it: &mut Chars, start: char) -> Result<(), ChunkError> {
+    use ChunkError::*;
     if !is_opening(start) {
         return Err(ChunkError::Corrupt(start));
     }
-    let mut n = must_next(it)?;
+    let closing = closing_of(start);
+    let mut n = must_next(it, closing)?;
     while is_opening(n) {
-        chunk(it, n)?;
-        n = must_next(it)?;
+        chunk(it, n).map_err(|e| match e {
+            Incomplete(mut v) => {
+                v.push(closing);
+                Incomplete(v)
+            }
+            e => e,
+        })?;
+        n = must_next(it, closing)?;
     }
-    if n != closing_of(start) {
+    if n != closing {
         Err(ChunkError::Corrupt(n))
     } else {
         Ok(())
@@ -74,12 +88,23 @@ const fn is_opening(c: char) -> bool {
     }
 }
 
-const fn points(c: char) -> u32 {
+#[allow(dead_code)]
+const fn points1(c: char) -> u32 {
     match c {
         ')' => 3,
         ']' => 57,
         '}' => 1197,
         '>' => 25137,
+        _ => unreachable!(),
+    }
+}
+
+const fn points(c: char) -> u64 {
+    match c {
+        ')' => 1,
+        ']' => 2,
+        '}' => 3,
+        '>' => 4,
         _ => unreachable!(),
     }
 }
